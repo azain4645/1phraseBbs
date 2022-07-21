@@ -69,6 +69,7 @@ import { addDoc, collection, getDocs, orderBy, query } from 'firebase/firestore'
 
 import { getFirestore } from 'firebase/firestore'
 
+// ここでthisがundifinedになる
 const db = getFirestore(this.$firebase)
 
 type Phrase = {
