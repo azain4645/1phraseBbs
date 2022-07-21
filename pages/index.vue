@@ -30,7 +30,6 @@
 
   </v-container>
 
-
   <v-card
     class="mx-auto"
     width="600"
@@ -56,7 +55,7 @@
 
 <script setup lang="ts">
 // import { db } from "~/plugins/firebase.js"
-import { doc, addDoc, collection, getDocs, query } from 'firebase/firestore'
+import { addDoc, collection, getDocs, query } from 'firebase/firestore'
 import { initializeApp } from "firebase/app"
 import { getFirestore } from 'firebase/firestore'
 
@@ -105,18 +104,21 @@ const writeToFirestore = async () => {
 }
 
 const readFromFirestore = async () => {
-  const ref = doc(db, "phrases", "text2")
   try {
     const q = query(collection(db, "phrases"));
 
     const querySnapshot = await getDocs(q);
+    const Docs = <Phrase[]>([])
+
     querySnapshot.forEach((doc) => {
       const addDoc = <Phrase>{
         text : doc.data().text,
         created_date: doc.data().created_date
       }
-      phrases.value.push(addDoc)
+      Docs.push(addDoc)
     });
+
+    phrases.value = Docs
   } catch (e) {
     alert("Error!")
     console.error(e)
@@ -124,6 +126,5 @@ const readFromFirestore = async () => {
 }
 
 const phrases = ref<Phrase[]>([])
-
 const message = ref('')
 </script>
