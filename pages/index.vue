@@ -94,8 +94,9 @@ const writeToFirestore = async () => {
   }
   try {
       await addDoc(collection(db, "phrases"), document)
-      alert("Success!")
+      // alert("Success!")
       message.value = ''
+      readFromFirestore()
   } catch (e) {
     alert("Error!")
     console.error(e)
