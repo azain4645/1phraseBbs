@@ -1,19 +1,35 @@
 <template>
-  <section class="container mx-auto mb-5">
-    <div>
-      <h2>
+  <v-container fluid>
+    <v-row>
+      <h2 class="mb-3 mx-auto">
         一言掲示板
       </h2>
-      <div>
-        <v-btn @click="writeToFirestore">
-          <span>Write now</span>
-        </v-btn>
-        <v-btn @click="readFromFirestore">
-          <span>Read now</span>
-        </v-btn>
-      </div>
-    </div>
-  </section>
+    </v-row>
+
+    <v-form class="">
+      <v-row>
+        <v-col cols="8">
+          <v-text-field 
+            type="text" 
+            v-model="message"
+            label="何か書き込んでみてください"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="4">
+          <v-btn @click="writeToFirestore">
+            <span>書き込む</span>
+          </v-btn>
+        </v-col>
+      </v-row>    
+    </v-form>
+
+    <v-btn @click="readFromFirestore">
+      <span>Read now</span>
+    </v-btn>
+
+  </v-container>
+
 
   <v-card
     class="mx-auto"
@@ -27,7 +43,7 @@
       </v-list-item-header>
     </v-list-item>
 
-    <v-list-item lines="two" v-for="phrase in phrases" :key="phrase">
+    <v-list-item lines="two" v-for="phrase in phrases" :key="phrase.text">
       <v-list-item-header>
         <v-list-item-title>{{ phrase.text }}</v-list-item-title>
         <v-list-item-subtitle>{{ phrase.created_date }}</v-list-item-subtitle>
@@ -40,10 +56,9 @@
 
 <script setup lang="ts">
 // import { db } from "~/plugins/firebase.js"
-import { doc, setDoc, getDoc } from 'firebase/firestore'
+import { doc, addDoc, collection, getDocs, query } from 'firebase/firestore'
 import { initializeApp } from "firebase/app"
 import { getFirestore } from 'firebase/firestore'
-import NoWorkResult from 'postcss/lib/no-work-result';
 
 const firebaseConfig  = { 
   apiKey: "AIzaSyDskyUlYX_3PO7ZBwTXjoTiO9aVceS1wOQ",
@@ -68,19 +83,21 @@ const formatedNow = () : string => {
           + '-' + ('00' + (d.getMonth() + 1)).slice(-2)
           + '-' + ('00' + d.getDate()).slice(-2)
           + ' ' + ('00' + d.getHours()).slice(-2)
-          + ':' + ('00' + d.getMinutes()).slice(-2);
+          + ':' + ('00' + d.getMinutes()).slice(-2)
+          + ':' + ('00' + d.getSeconds()).slice(-2);
 }
 
 const writeToFirestore = async () => {
-  const ref = doc(db, "phrases", "text2")
-  const d = new Date();
+  if(!message.value){ return }
+
   const document = {
-    text: "テスト",
+    text: message.value,
     created_date: formatedNow(),
-  };
+  }
   try {
-      await setDoc(ref, document)
+      await addDoc(collection(db, "phrases"), document)
       alert("Success!")
+      message.value = ''
   } catch (e) {
     alert("Error!")
     console.error(e)
@@ -90,18 +107,23 @@ const writeToFirestore = async () => {
 const readFromFirestore = async () => {
   const ref = doc(db, "phrases", "text2")
   try {
-    const document = await getDoc(ref)
-    phrases.value.push = document.data()
+    const q = query(collection(db, "phrases"));
 
-    // phrases.value.push = [{text: 'test2', created_date: '2002'}]
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      const addDoc = <Phrase>{
+        text : doc.data().text,
+        created_date: doc.data().created_date
+      }
+      phrases.value.push(addDoc)
+    });
   } catch (e) {
     alert("Error!")
     console.error(e)
   }
 }
 
-const phrases = ref<Phrase[]>([
-  {text: '書き込み１', created_date: '2022-07-20 12:08'}
-])
+const phrases = ref<Phrase[]>([])
 
+const message = ref('')
 </script>
