@@ -54,8 +54,7 @@
 </template>
 
 <script setup lang="ts">
-// import { db } from "~/plugins/firebase.js"
-import { addDoc, collection, getDocs, query } from 'firebase/firestore'
+import { addDoc, collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { initializeApp } from "firebase/app"
 import { getFirestore } from 'firebase/firestore'
 
@@ -105,7 +104,7 @@ const writeToFirestore = async () => {
 
 const readFromFirestore = async () => {
   try {
-    const q = query(collection(db, "phrases"));
+    const q = query(collection(db, "phrases"), orderBy('created_date', 'desc'));
 
     const querySnapshot = await getDocs(q);
     const Docs = <Phrase[]>([])
