@@ -114,5 +114,8 @@ const readFromFirestore = async () => {
 }
 
 const phrases = ref<Phrase[]>([])
+onMounted(() => {
+  readFromFirestore();
+})
 const message = ref('')
 </script>
