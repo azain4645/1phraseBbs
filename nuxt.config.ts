@@ -12,5 +12,4 @@ export default defineNuxtConfig({
     },
   },
   ssr:true,
-  plugins: ['@/plugins/firebase.js']
 })

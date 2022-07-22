@@ -55,22 +55,8 @@
 
 <script setup lang="ts">
 import { addDoc, collection, getDocs, orderBy, query } from 'firebase/firestore'
-// import { initializeApp } from "firebase/app"
-// const firebaseConfig  = { 
-//   apiKey: "AIzaSyDskyUlYX_3PO7ZBwTXjoTiO9aVceS1wOQ",
-//   authDomain: "phrasebbs.firebaseapp.com",
-//   projectId: "phrasebbs",
-//   storageBucket: "phrasebbs.appspot.com",
-//   messagingSenderId: "501839072363",
-//   appId: "1:501839072363:web:5889fa3860da58fd8ff52e"
-// }
 
-// const app = initializeApp(firebaseConfig);
-
-import { getFirestore } from 'firebase/firestore'
-
-// ここでthisがundifinedになる
-const db = getFirestore(this.$firebase)
+const { $firebaseDB } = useNuxtApp();
 
 type Phrase = {
   text: string;
@@ -95,7 +81,7 @@ const writeToFirestore = async () => {
     created_date: formatedNow(),
   }
   try {
-      await addDoc(collection(db, "phrases"), document)
+      await addDoc(collection($firebaseDB, "phrases"), document)
       // alert("Success!")
       message.value = ''
       readFromFirestore()
@@ -107,7 +93,7 @@ const writeToFirestore = async () => {
 
 const readFromFirestore = async () => {
   try {
-    const q = query(collection(db, "phrases"), orderBy('created_date', 'desc'));
+    const q = query(collection($firebaseDB, "phrases"), orderBy('created_date', 'desc'));
 
     const querySnapshot = await getDocs(q);
     const Docs = <Phrase[]>([])
