@@ -24,9 +24,9 @@
       </v-row>    
     </v-form>
 
-    <v-btn @click="readFromFirestore">
+    <!-- <v-btn @click="readFromFirestore">
       <span>Read now</span>
-    </v-btn>
+    </v-btn> -->
 
   </v-container>
 
